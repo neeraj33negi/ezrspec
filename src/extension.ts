@@ -12,9 +12,16 @@ export function activate(context: vscode.ExtensionContext) {
 		return true;
 	};
 
-	// We want to create a new terminal all the times to preserve anything user might have on current set of terminals
 	const createTerminal = () => {
-		const terminal = vscode.window.createTerminal('EZRspec Terminal');
+		const terminalName = 'EZRspec Terminal';
+		const ezRspecTerminals = vscode.window.terminals.filter(t => t.name === terminalName);
+		let terminal: vscode.Terminal;
+		// TODO: Set upper limit from some config
+		if (ezRspecTerminals.length >= 5) {
+			terminal = ezRspecTerminals[0];
+		} else {
+			terminal = vscode.window.createTerminal('EZRspec Terminal');
+		}
 		terminal.show();
 		return terminal;
 	};
