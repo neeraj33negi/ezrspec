@@ -1,26 +1,54 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
+	console.log('Extension "ezrspec" is now active!');
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "ezrspec" is now active!');
+	const validateOpenFile = () => {
+		const editor = vscode.window.activeTextEditor;
+		if (!editor) {
+			vscode.window.showErrorMessage('No active file found!. Please open a file and try again.');
+			return editor;
+		}
+		return true;
+	};
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('ezrspec.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from ezrspec!');
+	// We want to create a new terminal all the times to preserve anything user might have on current set of terminals
+	const createTerminal = () => {
+		const terminal = vscode.window.createTerminal('EZRspec Terminal');
+		terminal.show();
+		return terminal;
+	};
+
+	const currentLineDisposable = vscode.commands.registerCommand('ezrspec.runRspecOnCurrentLine', () => {
+		if (!validateOpenFile()) {
+			return;
+		}
+		let currentLine = vscode.window.activeTextEditor?.selection.active?.line;
+		if (currentLine === undefined) {
+			vscode.window.showErrorMessage('Could not determine current line. Running on entire file instead.');
+			vscode.commands.executeCommand('ezrspec.runRspecOnCurrentFile');
+			return;
+		}
+		currentLine++;
+		vscode.window.showInformationMessage('Running RSpec on line: ' + currentLine);
+		const filePath = vscode.window.activeTextEditor?.document.uri.fsPath;
+		const terminal = createTerminal();
+		terminal.sendText(`bundle exec rspec ${filePath}:${currentLine}`);
 	});
 
-	context.subscriptions.push(disposable);
+	const currentFileDisposable = vscode.commands.registerCommand('ezrspec.runRspecOnCurrentFile', () => {
+		const editor = validateOpenFile();
+		if (!editor) {
+			return;
+		}
+		vscode.window.showInformationMessage('Running RSpec on file: ' + vscode.window.activeTextEditor?.document.fileName);
+		const filePath = vscode.window.activeTextEditor?.document.uri.fsPath;
+		const terminal = createTerminal();
+		terminal.sendText(`bundle exec rspec ${filePath}`);
+	});
+
+	context.subscriptions.push(currentLineDisposable);
+	context.subscriptions.push(currentFileDisposable);
 }
 
-// This method is called when your extension is deactivated
 export function deactivate() {}

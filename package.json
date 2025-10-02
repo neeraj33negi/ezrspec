@@ -1,7 +1,7 @@
 {
   "name": "ezrspec",
   "displayName": "ezrspec",
-  "description": "run rspec directly from editor",
+  "description": "Run rspec directly from editor",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.104.0"
@@ -14,8 +14,12 @@
   "contributes": {
     "commands": [
       {
-        "command": "ezrspec.helloWorld",
-        "title": "Hello World"
+        "command": "ezrspec.runRspecOnCurrentLine",
+        "title": "Run Rspec on current line"
+      },
+      {
+        "command": "ezrspec.runRspecOnCurrentFile",
+        "title": "Run Rspec on current file"
       }
     ]
   },
