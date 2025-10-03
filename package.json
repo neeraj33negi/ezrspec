@@ -21,6 +21,41 @@
         "command": "ezrspec.runRspecOnCurrentFile",
         "title": "Run Rspec on current file"
       }
+    ],
+    "submenus": [
+      {
+        "submenu": "editor/context",
+        "id": "ezrspecSubmenu",
+        "label": "EZRspec",
+        "group": "navigation",
+        "when": "editorTextFocus && editorLangId == 'ruby'"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "when": "editorTextFocus && editorLangId == 'ruby'",
+          "group": "navigation",
+          "submenu": "ezrspecSubmenu"
+        }
+      ],
+      "ezrspecSubmenu": [
+        {
+          "command": "ezrspec.runRspecOnCurrentLine",
+          "group": "navigation"
+        },
+        {
+          "command": "ezrspec.runRspecOnCurrentFile",
+          "group": "navigation"
+        }
+      ]
+    },
+    "languages": [
+      {
+        "id": "ruby",
+        "extensions": [".rb", ".ruby"],
+        "aliases": ["Ruby","rb"]
+      }
     ]
   },
   "scripts": {

@@ -3,6 +3,13 @@ import * as vscode from 'vscode';
 export function activate(context: vscode.ExtensionContext) {
 	console.log('Extension "ezrspec" is now active!');
 
+	const validateIfRubyFile = () => {
+		const editor = validateOpenFile();
+		if (!editor) {
+			return;
+		}
+	};
+
 	const validateOpenFile = () => {
 		const editor = vscode.window.activeTextEditor;
 		if (!editor) {
