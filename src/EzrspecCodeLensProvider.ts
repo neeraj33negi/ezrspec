@@ -16,6 +16,10 @@ class EzrspecCodeLensProvider implements vscode.CodeLensProvider {
       if (!editor) {
         return [];
       }
+      const isRspecFile = editor.document.fileName.endsWith('_spec.rb');
+      if (!isRspecFile) {
+        return [];
+      }
       const line = editor.selection.active.line;
       const range = new vscode.Range(line, 0, line, 0);
       return [

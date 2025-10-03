@@ -31,7 +31,7 @@
     "menus": {
       "editor/context": [
         {
-          "when": "editorTextFocus && editorLangId == 'ruby'",
+          "when": "editorTextFocus && editorLangId == 'ruby' && ezrspec:isSpecFile",
           "group": "navigation",
           "submenu": "ezrspecSubmenu"
         }

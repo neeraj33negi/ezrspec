@@ -4,35 +4,6 @@ import EzrspecCodeLensProvider from './EzrspecCodeLensProvider';
 export function activate(context: vscode.ExtensionContext) {
 	console.log('Extension "ezrspec" is now active!');
 
-	const decorationType = vscode.window.createTextEditorDecorationType({
-    gutterIconPath: context.asAbsolutePath('resources/play_icon.svg'),
-    gutterIconSize: 'contain'
-  });
-
-  const updateGutterIcon = (editor: vscode.TextEditor | undefined) => {
-    if (!editor) {
-      return;
-    }
-    const line = editor.selection.active.line;
-    if (line >= editor.document.lineCount) {
-      return;
-    }
-    // const range = new vscode.Range(line, 0, line, 0);
-    // editor.setDecorations(decorationType, [{ range }]);
-  };
-
-  if (vscode.window.activeTextEditor) {
-    updateGutterIcon(vscode.window.activeTextEditor);
-  }
-
-  vscode.window.onDidChangeTextEditorSelection(event => {
-    updateGutterIcon(event.textEditor);
-  }, null, context.subscriptions);
-
-  vscode.window.onDidChangeActiveTextEditor(editor => {
-    updateGutterIcon(editor);
-  }, null, context.subscriptions);
-
   const runFromGutter = vscode.commands.registerCommand('ezrspec.gutterMenu', async () => {
     const choice = await vscode.window.showQuickPick([
       { label: 'Run RSpec on current line', command: 'ezrspec.runRspecOnCurrentLine' },
@@ -52,10 +23,15 @@ export function activate(context: vscode.ExtensionContext) {
     const isRspecFile = editor.document.fileName.endsWith('_spec.rb');
     if (!isRspecFile) {
       vscode.window.showErrorMessage('Not an RSpec file');
-      return;
+      return false;
     }
 		return true;
 	};
+
+  vscode.window.onDidChangeActiveTextEditor(editor => {
+    const isSpec = editor?.document.fileName.endsWith('_spec.rb') ?? false;
+    vscode.commands.executeCommand('setContext', 'ezrspec:isSpecFile', isSpec);
+  });
 
 	const createTerminal = () => {
 		const terminalName = 'EZRspec Terminal';
